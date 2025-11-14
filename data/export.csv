@@ -1,3 +1,5 @@
 id,date,type,category,amount,description
-adee4902-90a4-4283-ab9d-ab2ac8ae1409,2025-11-14,EXPENSE,Loan,350,
-a26f6264-1523-4efe-ae43-3669cffcfb3f,2025-11-14,INCOME,General,3000,Tuition
+1cb4bbae-0088-4f0d-afa8-62c9a7e0ae07,2025-11-14,EXPENSE,General,150,icpc
+fbcc1096-4f61-4d0e-b5b4-ddffa8dfc484,2025-11-14,EXPENSE,loan,10,given to riyad
+8f6f52f7-b7c5-4eaa-83bb-20113ef63a3e,2025-11-14,EXPENSE,General,150,hackathon
+eb62bd80-593a-483b-aca1-9be030c54b6a,2025-11-14,INCOME,Salary,20000,

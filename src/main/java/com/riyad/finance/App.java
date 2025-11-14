@@ -1,7 +1,8 @@
 package com.riyad.finance;
 
 import com.riyad.finance.dao.TransactionDAO;
-import com.riyad.finance.ui.FinanceAppUI;
+import com.riyad.finance.dao.UserDAO;
+import com.riyad.finance.ui.LoginUI;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -10,15 +11,15 @@ public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Path to the text file storage
-                Path db = Path.of("data/transactions.txt");
+                Path txFile = Path.of("data/transactions.txt");
+                TransactionDAO txDAO = new TransactionDAO(txFile);
 
-                // Initialize DAO
-                TransactionDAO dao = new TransactionDAO(db);
+                Path userFile = Path.of("data/users.txt");
+                UserDAO userDAO = new UserDAO(userFile);
 
-                // Launch the Swing GUI
-                FinanceAppUI ui = new FinanceAppUI(dao);
-                ui.setVisible(true);
+                LoginUI loginUI = new LoginUI(userDAO, txDAO);
+                loginUI.setVisible(true);
+
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Failed to start: " + ex.getMessage());

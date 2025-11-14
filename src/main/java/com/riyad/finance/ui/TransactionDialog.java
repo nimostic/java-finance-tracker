@@ -14,9 +14,10 @@ public class TransactionDialog extends JDialog {
     private final JTextField categoryField = new JTextField(15);
     private final JTextField amountField = new JTextField(10);
     private final JTextField descField = new JTextField(20);
-
-    public TransactionDialog(Frame owner) {
+    private String username;
+    public TransactionDialog(Frame owner, String username)  {
         super(owner, "Add / Edit Transaction", true);
+        this.username = username;
         setLayout(new BorderLayout());
 
         JPanel form = new JPanel(new GridLayout(5, 2, 6, 6));
@@ -65,6 +66,6 @@ public class TransactionDialog extends JDialog {
         LocalDate date = LocalDate.parse(dateField.getText());
         Transaction.Type type = (Transaction.Type) typeBox.getSelectedItem();
         BigDecimal amt = new BigDecimal(amountField.getText());
-        return new Transaction(id, date, type, categoryField.getText(), amt, descField.getText());
+        return new Transaction(id, date, type, categoryField.getText(), amt, descField.getText(), username);
     }
 }

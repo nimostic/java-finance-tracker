@@ -1,97 +1,74 @@
 package com.riyad.finance.dao;
 
-
 import com.riyad.finance.model.Transaction;
-import com.riyad.finance.storage.FileStorage;
-import com.riyad.finance.util.DateUtil;
 
-
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionDAO {
-    private static final String SEP = "|";
-    private final FileStorage storage;
+    private final Path file;
 
-
-    public TransactionDAO(Path filePath) {
-        this.storage = new FileStorage(filePath);
+    public TransactionDAO(Path file){
+        this.file = file.toAbsolutePath();
+        try { if(!file.toFile().exists()) file.toFile().createNewFile(); } catch(IOException e){ e.printStackTrace(); }
     }
 
-
-    public List<Transaction> findAll() throws IOException {
-        List<String> lines = storage.readAllLines();
-        List<Transaction> list = new ArrayList<>();
-        for (String line : lines) {
-            if (line.trim().isEmpty()) continue;
-            String[] parts = line.split("\\" + SEP, -1);
-// id|date|type|category|amount|description
-            String id = parts[0];
-            LocalDate date = DateUtil.parseDate(parts[1]);
-            Transaction.Type type = Transaction.Type.valueOf(parts[2]);
-            String category = parts[3];
-            BigDecimal amount = new BigDecimal(parts[4]);
-            String description = parts.length > 5 ? parts[5] : "";
-            list.add(new Transaction(id, date, type, category, amount, description));
+    public void save(Transaction t) throws IOException {
+        try(BufferedWriter w = new BufferedWriter(new FileWriter(file.toFile(), true))){
+            w.write(String.format("%s,%s,%s,%s,%s,%s,%s",
+                    t.getId(), t.getDate(), t.getType(), t.getCategory(),
+                    t.getAmount(), t.getDescription().replace(",", ";"), t.getUsername()));
+            w.newLine();
         }
-// sort newest first
-        list.sort(Comparator.comparing(Transaction::getDate).reversed());
-        return list;
     }
 
-
-    public void save(Transaction tx) throws IOException {
-// append
-        String line = encode(tx);
-        storage.appendLine(line);
-    }
-
-
-    public void update(Transaction tx) throws IOException {
-        List<Transaction> all = findAll();
-        boolean found = false;
-        for (int i = 0; i < all.size(); i++) {
-            if (all.get(i).getId().equals(tx.getId())) {
-                all.set(i, tx);
-                found = true;
+    public void update(Transaction updated) throws IOException {
+        List<Transaction> list = findAll();
+        for(int i=0; i<list.size(); i++){
+            if(list.get(i).getId().equals(updated.getId())){
+                list.set(i, updated);
                 break;
             }
         }
-        if (!found) throw new NoSuchElementException("Transaction not found: " + tx.getId());
-        writeList(all);
+        saveAll(list);
     }
-
 
     public void delete(String id) throws IOException {
-        List<Transaction> all = findAll();
-        List<Transaction> filtered = all.stream().filter(t -> !t.getId().equals(id)).collect(Collectors.toList());
-        writeList(filtered);
+        List<Transaction> list = findAll();
+        list.removeIf(t -> t.getId().equals(id));
+        saveAll(list);
     }
 
-
-    private void writeList(List<Transaction> list) throws IOException {
-        List<String> lines = new ArrayList<>();
-        for (Transaction t : list) lines.add(encode(t));
-        storage.writeAllLines(lines);
+    private void saveAll(List<Transaction> list) throws IOException {
+        try(BufferedWriter w = new BufferedWriter(new FileWriter(file.toFile(), false))){
+            for(Transaction t: list){
+                w.write(String.format("%s,%s,%s,%s,%s,%s,%s",
+                        t.getId(), t.getDate(), t.getType(), t.getCategory(),
+                        t.getAmount(), t.getDescription().replace(",", ";"), t.getUsername()));
+                w.newLine();
+            }
+        }
     }
 
-
-    private String encode(Transaction tx) {
-// escape '|' in description/category if necessary (simple replace)
-        String desc = tx.getDescription() == null ? "" : tx.getDescription().replace(SEP, "/");
-        String cat = tx.getCategory() == null ? "" : tx.getCategory().replace(SEP, "/");
-        return String.join(SEP,
-                tx.getId(),
-                DateUtil.formatDate(tx.getDate()),
-                tx.getType().name(),
-                cat,
-                tx.getAmount().toPlainString(),
-                desc
-        );
+    public List<Transaction> findAll() throws IOException {
+        List<Transaction> list = new ArrayList<>();
+        try(BufferedReader r = new BufferedReader(new FileReader(file.toFile()))){
+            String line;
+            while((line=r.readLine())!=null){
+                String[] p = line.split(",",7);
+                if(p.length==7){
+                    list.add(new Transaction(
+                            p[0], LocalDate.parse(p[1]),
+                            Transaction.Type.valueOf(p[2]),
+                            p[3], new BigDecimal(p[4]), p[5], p[6]
+                    ));
+                }
+            }
+        }
+        return list;
     }
 }
