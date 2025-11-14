@@ -1,0 +1,2 @@
+adee4902-90a4-4283-ab9d-ab2ac8ae1409|2025-11-14|EXPENSE|Loan|350|
+a26f6264-1523-4efe-ae43-3669cffcfb3f|2025-11-14|INCOME|General|2000|Tuition
