@@ -10,13 +10,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class CSVExporter {
-
-    /**
-     * Export a list of transactions to a CSV file
-     * @param list List of transactions
-     * @param out Path to output CSV file
-     * @throws IOException if writing fails
-     */
     public static void exportToCsv(List<Transaction> list, Path out) throws IOException {
         try (BufferedWriter w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
             // Header row

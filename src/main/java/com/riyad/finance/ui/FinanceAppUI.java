@@ -37,9 +37,8 @@ public class FinanceAppUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // ==========================
         // TABLE
-        // ==========================
+
         tableModel = new DefaultTableModel(
                 new String[]{"ID", "Date", "Type", "Category", "Amount", "Description"}, 0
         ) {
@@ -51,10 +50,7 @@ public class FinanceAppUI extends JFrame {
 
         table = new JTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
-
-        // ==========================
         // TOOLBAR BUTTONS
-        // ==========================
         JPanel toolbar = new JPanel();
         JButton addBtn = new JButton("Add");
         JButton editBtn = new JButton("Edit");
@@ -79,9 +75,8 @@ public class FinanceAppUI extends JFrame {
         exportBtn.addActionListener(e -> onExport());
         logoutBtn.addActionListener(e -> onLogout());
 
-        // ==========================
         // SUMMARY PANEL (Styled)
-        // ==========================
+
         JPanel summaryPanel = new JPanel(new GridLayout(1, 3));
         summaryPanel.setBackground(new Color(245, 245, 245));
         summaryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -109,9 +104,9 @@ public class FinanceAppUI extends JFrame {
         refreshTable();
     }
 
-    // ==========================
+
     // ADD TRANSACTION
-    // ==========================
+
     private void onAdd() {
         TransactionDialog dlg = new TransactionDialog(this, currentUser);
         dlg.setFields(java.time.LocalDate.now().toString(), Transaction.Type.EXPENSE, "General", "0.00", "");
@@ -129,9 +124,9 @@ public class FinanceAppUI extends JFrame {
         }
     }
 
-    // ==========================
+
     // EDIT TRANSACTION
-    // ==========================
+
     private void onEdit() {
         int r = table.getSelectedRow();
         if (r == -1) {
@@ -163,9 +158,9 @@ public class FinanceAppUI extends JFrame {
         }
     }
 
-    // ==========================
+
     // DELETE
-    // ==========================
+
     private void onDelete() {
         int r = table.getSelectedRow();
         if (r == -1) {
@@ -189,9 +184,9 @@ public class FinanceAppUI extends JFrame {
         }
     }
 
-    // ==========================
+
     // EXPORT CSV
-    // ==========================
+
     private void onExport() {
         try {
             Path out = Path.of("data/export.csv");
@@ -202,9 +197,9 @@ public class FinanceAppUI extends JFrame {
         }
     }
 
-    // ==========================
+
     // REFRESH TABLE + SUMMARY
-    // ==========================
+
     private void refreshTable() {
         try {
             List<Transaction> all = txDAO.findAll();
@@ -244,9 +239,9 @@ public class FinanceAppUI extends JFrame {
         }
     }
 
-    // ==========================
+
     // LOGOUT
-    // ==========================
+
     private void onLogout() {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -261,9 +256,9 @@ public class FinanceAppUI extends JFrame {
         }
     }
 
-    // ==========================
+
     // ERROR POPUP
-    // ==========================
+
     private void showError(Exception ex) {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this,
